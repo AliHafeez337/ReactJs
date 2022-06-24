@@ -1,23 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
-import Login from './components/Login/Login';
-import Home from './components/Home/Home';
-import MainHeader from './components/MainHeader/MainHeader';
-
-import AuthContext from './store/auth-Context';
+import './App.css';
+import DemoList from './components/Demo/DemoList';
+import Button from './components/UI/Button/Button';
 
 function App() {
+  const [listTitle, setListTitle] = useState('My List');
 
-  const authCtx = useContext(AuthContext)
+  const changeTitleHandler = useCallback(() => {
+    setListTitle('New Title');
+  }, []);
+  // const changeTitleHandler = () => {
+  //   setListTitle('New Title');
+  // };
+
+  const listItems = useMemo(() => [5, 3, 1, 10, 9], []);
+  // const listItems = [5, 3, 1, 10, 9];
 
   return (
-    <React.Fragment>
-      <MainHeader />
-      <main>
-        {!authCtx.isLoggedIn && <Login />}
-        {authCtx.isLoggedIn && <Home />}
-      </main>
-    </React.Fragment>
+    <div className="app">
+      <DemoList title={listTitle} items={listItems} />
+      {/* <DemoList items={listItems} /> */}
+      <Button onClick={changeTitleHandler}>Change List Title</Button>
+    </div>
   );
 }
 
