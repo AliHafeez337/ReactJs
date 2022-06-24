@@ -97,6 +97,12 @@ const Login = (props) => {
   }, []);
 
   /**
+   * Below lines are destructuring object (userEmail) and assigning an alias (ref) to isValid property/key so that we can listen to these specific property
+   */
+  const { isValid: isEmailValid } = userEmail;
+  const { isValid: isPasswordValid } = userPassword;
+
+  /**
    * 
    * "DEBOUNCING"
    * the cleanup function will run before the actual useEffect runs
@@ -104,19 +110,17 @@ const Login = (props) => {
    * after user stops for 500ms, the callback inside timer will run that will perform resouce intensive task
    * 
    */
-  // useEffect(() => {
-  //   const identifier = setTimeout(() => {
-  //     console.log('Checking form validity!');
-  //     setFormIsValid(
-  //       validateEmail(enteredEmail) && enteredPassword.trim().length > 6
-  //     );
-  //   }, 500);
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log('Checking form validity!');
+      setFormIsValid(isEmailValid && isPasswordValid);
+    }, 500);
 
-  //   return () => {
-  //     console.log('CLEANUP');
-  //     clearTimeout(identifier);
-  //   };
-  // }, [enteredEmail, enteredPassword]);
+    return () => {
+      console.log('CLEANUP');
+      clearTimeout(identifier);
+    };
+  }, [isEmailValid, isPasswordValid]);
 
   const emailChangeHandler = (event) => {
     // setEnteredEmail(event.target.value);
@@ -128,9 +132,9 @@ const Login = (props) => {
     // setFormIsValid(
     //   validateEmail(event.target.value) && validatePassword(enteredPassword)
     // );
-    setFormIsValid(
-      validateEmail(event.target.value) && validatePassword(userPassword.value)
-    );
+    // setFormIsValid(
+    //   validateEmail(event.target.value) && validatePassword(userPassword.value)
+    // );
   };
 
   const passwordChangeHandler = (event) => {
@@ -143,9 +147,9 @@ const Login = (props) => {
     // setFormIsValid(
     //   validateEmail(enteredEmail) && validatePassword(event.target.value)
     // );
-    setFormIsValid(
-      validateEmail(userEmail.value) && validatePassword(event.target.value)
-    );
+    // setFormIsValid(
+    //   validateEmail(userEmail.value) && validatePassword(event.target.value)
+    // );
   };
 
   const validateEmailHandler = () => {
