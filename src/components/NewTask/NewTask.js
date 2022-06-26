@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { 
+  useCallback, 
+  // useState 
+} from 'react';
 
 import Section from '../UI/Section';
 import TaskForm from './TaskForm';
@@ -6,43 +9,18 @@ import TaskForm from './TaskForm';
 import useTaskService from '../../customHooks/useTaskService';
 
 const NewTask = (props) => {
-  // const { isLoading, tasks, error, fetchTasks } = useTaskService({
-  //   method: 'POST',
 
-  // });
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { onAddTask } = props;
+  const callback = useCallback((createdTask) => {
+    onAddTask(createdTask)
+  }, [onAddTask]);
+  const { isLoading, error, fetchTasks } = useTaskService(callback);
 
   const enterTaskHandler = async (taskText) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        'https://testing-272511.firebaseio.com/tasks.json',
-        {
-          method: 'POST',
-          body: JSON.stringify({ text: taskText }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Request failed!');
-      }
-
-      const data = await response.json();
-
-      const generatedId = data.name; // firebase-specific => "name" contains generated id
-      const createdTask = { id: generatedId, text: taskText };
-
-      props.onAddTask(createdTask);
-    } catch (err) {
-      setError(err.message || 'Something went wrong!');
-    }
-    setIsLoading(false);
+    fetchTasks({
+      method: 'POST',
+      task: taskText
+    })
   };
 
   return (

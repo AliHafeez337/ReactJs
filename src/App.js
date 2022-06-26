@@ -1,7 +1,8 @@
 import React, { 
   useEffect,
-  useMemo, 
-  // useState 
+  // useMemo, 
+  useCallback,
+  useState 
 } from 'react';
 
 import Tasks from './components/Tasks/Tasks';
@@ -10,14 +11,25 @@ import NewTask from './components/NewTask/NewTask';
 import useTaskService from './customHooks/useTaskService';
 
 function App() {
-  const { isLoading, tasks, error, fetchTasks } = useTaskService(useMemo(() => { return {} })); // it was also working without "useMemo" to return an object witch never changes... the point to add it here is that we don't want the object to be changed... because otherwise the object param in "useTaskService" will change which will cause the "fetchTasks" to run again which inturn will cause the "useEffect" to run again hence creating infine loop...
+  const [tasks, setTasks] = useState([]);
+
+  const doneFetching = useCallback(data => {
+    const loadedTasks = [];
+
+    for (const taskKey in data) {
+      loadedTasks.push({ id: taskKey, text: data[taskKey].text });
+    }
+
+    setTasks(loadedTasks);
+  }, []);
+  const { isLoading, error, fetchTasks } = useTaskService(doneFetching);
 
   useEffect(() => {
-    fetchTasks();
+    fetchTasks({});
   }, [fetchTasks]);
 
   const taskAddHandler = (task) => {
-    fetchTasks();
+    fetchTasks({});
   };
 
   return (

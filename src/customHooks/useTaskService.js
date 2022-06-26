@@ -5,12 +5,11 @@ import {
   useCallback 
 } from "react";
 
-const useTaskService = ({ method = 'GET', task = null }) => {
+const useTaskService = (callback) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [tasks, setTasks] = useState([]);
 
-  const fetchTasks = useCallback(async () => {
+  const fetchTasks = useCallback(async ({ method = 'GET', task = null }) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -32,26 +31,16 @@ const useTaskService = ({ method = 'GET', task = null }) => {
       }
 
       const data = await response.json();
+      console.log('data', data)
 
-      const loadedTasks = [];
-
-      for (const taskKey in data) {
-        loadedTasks.push({ id: taskKey, text: data[taskKey].text });
-      }
-
-      console.log('loaded tasks', loadedTasks)
-      setTasks(loadedTasks);
+      callback(data);
     } catch (err) {
       setError(err.message || 'Something went wrong!');
     }
     setIsLoading(false);
-  }, [method, task]);
+  }, [callback]);
 
-  // useEffect(() => {
-  //   fetchTasks();
-  // }, [fetchTasks]);
-
-  return { isLoading, tasks, error, fetchTasks };
+  return { isLoading, error, fetchTasks };
 }
 
 export default useTaskService;
