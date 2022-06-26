@@ -1,28 +1,35 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { 
+  useEffect,
+  useMemo, 
+  // useState 
+} from 'react';
 
-import './App.css';
-import DemoList from './components/Demo/DemoList';
-import Button from './components/UI/Button/Button';
+import Tasks from './components/Tasks/Tasks';
+import NewTask from './components/NewTask/NewTask';
+
+import useTaskService from './customHooks/useTaskService';
 
 function App() {
-  const [listTitle, setListTitle] = useState('My List');
+  const { isLoading, tasks, error, fetchTasks } = useTaskService(useMemo(() => { return {} })); // it was also working without "useMemo" to return an object witch never changes... the point to add it here is that we don't want the object to be changed... because otherwise the object param in "useTaskService" will change which will cause the "fetchTasks" to run again which inturn will cause the "useEffect" to run again hence creating infine loop...
 
-  const changeTitleHandler = useCallback(() => {
-    setListTitle('New Title');
-  }, []);
-  // const changeTitleHandler = () => {
-  //   setListTitle('New Title');
-  // };
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
-  const listItems = useMemo(() => [5, 3, 1, 10, 9], []);
-  // const listItems = [5, 3, 1, 10, 9];
+  const taskAddHandler = (task) => {
+    fetchTasks();
+  };
 
   return (
-    <div className="app">
-      <DemoList title={listTitle} items={listItems} />
-      {/* <DemoList items={listItems} /> */}
-      <Button onClick={changeTitleHandler}>Change List Title</Button>
-    </div>
+    <React.Fragment>
+      <NewTask onAddTask={taskAddHandler} />
+      <Tasks
+        items={tasks}
+        loading={isLoading}
+        error={error}
+        onFetch={fetchTasks}
+      />
+    </React.Fragment>
   );
 }
 
