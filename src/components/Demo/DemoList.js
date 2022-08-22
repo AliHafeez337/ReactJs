@@ -20,6 +20,7 @@ const DemoList = (props) => {
 
   return (
     <div className={classes.list}>
+      {props.children}
       <h2>{props.title}</h2>
       <ul>
         {sortedList.map((item) => (
